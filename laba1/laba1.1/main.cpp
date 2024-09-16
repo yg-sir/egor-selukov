@@ -22,7 +22,7 @@ int main()
         return 1;
     }
     cout << "Ключ загружен\n";
-    modShifr shifr(key);
+    Cipher shifr(key);
     do {
         cout << "Что сделать?(Выход-0, Зашифровать-1, Расшифровать-2): ";
         cin >> vibor;
