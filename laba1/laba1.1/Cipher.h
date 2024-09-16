@@ -3,12 +3,12 @@
 #include <string>
 #include <map>
 using namespace std;
-class modShifr {
+class Cipher {
     private:
         int key;
     public:
-        modShifr()=delete;
-        modShifr(int skey);
+        Cipher()=delete;
+        Cipher(int skey);
         string encrypt(string &text);
         string decrypt(string &text);
 };
