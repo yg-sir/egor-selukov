@@ -4,7 +4,7 @@ string Cipher ::encrypt(string& text)
 {
     int k = 0;
     int simvoli = text.size();
-    int stroki = ((simvoli - 1) / key) + 1;
+    int stroki = ((simvoli) / key);
     char** tabl = new char*[stroki];
     for(int i = 0; i < stroki; i++)
         tabl[i] = new char[key];
@@ -27,7 +27,7 @@ string Cipher ::decrypt(string& text)
 {
     int k = 0;
     int simvoli = text.size();
-    int stroki = ((simvoli - 1) / key) + 1;
+    int stroki = ((simvoli) / key);
     char** tabl = new char*[stroki];
     for(int i = 0; i < stroki; i++)
         tabl[i] = new char[key];
