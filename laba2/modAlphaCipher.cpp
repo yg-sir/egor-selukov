@@ -98,7 +98,7 @@ inline string modAlphaCipher::getValidCipherText(const string& s)
         throw cipher_error("Пустой текст");
     for(auto c : tmp) {
         if((c < L'А' || c > L'Я') && c != L'Ё')
-            throw cipher_error(string("Неправельно зашифрованный текст ") + s);
+            throw cipher_error(string("Неправильно зашифрованный текст ") + s);
     }
     mp = codec.to_bytes(tmp);
     return mp;
