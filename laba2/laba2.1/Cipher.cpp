@@ -32,7 +32,7 @@ inline string Cipher::getValidCipherText(string &s, string &open_text) {
     int r1 = s.size();
     int r2 = open_text.size();
     if (r1 != r2)
-        throw cipher_error (string ("Неправельно зашифрованный текст: ") + s);
+        throw cipher_error (string ("Неправильно зашифрованный текст: ") + s);
     return s;
 }
 
@@ -69,12 +69,12 @@ inline string Cipher::getValidOpenText(string &s) {
     throw cipher_error("Отсутствует открытый текст");
     for(int i = 0; i < razmer; i++)
         if(s[i] <='A' ||  s[i] >= 'z')
-            throw cipher_error("Некоректные символы в символе");
+            throw cipher_error("Некорректные символы в строке");
             return s;
 }
         
 inline int Cipher::getValidKey(int key,const string &Text) {
     if(key < 2 || key > Text.size())
-        throw cipher_error("Некоректный размер ключа");
+        throw cipher_error("Некорректный размер ключа");
     return key;
 }
