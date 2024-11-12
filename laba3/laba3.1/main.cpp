@@ -2,22 +2,22 @@
 #include "Cipher.h"
 #include <string>
 
-std::string s = "Sverchkov";
+std::string s = "SVERCHKOV";
 
 SUITE(KeyTest) {
     TEST(ValidKey) {
-        Cipher cipher(3, "Sverchkov");
-        CHECK_EQUAL("ehvvcoSrk", cipher.encrypt(s));
+        Cipher cipher(3, "SVERCHKOV");
+        CHECK_EQUAL("EHVVCOSRK", cipher.encrypt(s));
     }
     TEST(LongKey) {
-        CHECK_THROW(Cipher(1, "Sverchkov"), CipherError);
+        CHECK_THROW(Cipher(1, "SVERCHKOV"), CipherError);
     }
 }
 
 struct CipherFixture {
     Cipher* cipherInstance;
     CipherFixture() {
-        cipherInstance = new Cipher(3, "Sverchkov");
+        cipherInstance = new Cipher(3, "SVERCHKOV");
     }
     ~CipherFixture() {
         delete cipherInstance;
@@ -34,8 +34,8 @@ SUITE(EncryptTest) {
         CHECK_EQUAL("ehvvcosrk", cipherInstance->encrypt(input));
     }
     TEST_FIXTURE(CipherFixture, StringWithWhitespaceAndPunct) {
-        std::string input = "Sverch kov";
-        CHECK_EQUAL("ehvvcoSrk", cipherInstance->encrypt(input));
+        std::string input = "SVERCH KOV";
+        CHECK_EQUAL("EHVVCOSRK", cipherInstance->encrypt(input));
     }
     TEST_FIXTURE(CipherFixture, StringWithNumbers) {
         std::string input = "sver4kov";
@@ -50,9 +50,9 @@ SUITE(EncryptTest) {
         CHECK_THROW(cipherInstance->encrypt(input), CipherError);
     }
     TEST(MaxShiftKey) {
-        Cipher cipher(9, "Sverchkov");
-        std::string input1 = "vokhcrevS";
-        std::string input2 = "Sverchkov";
+        Cipher cipher(9, "SVERCHKOV");
+        std::string input1 = "VOKHCREVS";
+        std::string input2 = "SVERCHKOV";
         CHECK_EQUAL("Sverchkov", cipher.decrypt(input1, input2));
     }
 }
@@ -69,8 +69,8 @@ SUITE(DecryptTest) {
         CHECK_EQUAL("sverchkov", cipherInstance->decrypt(input1, input2));
     }
     TEST_FIXTURE(CipherFixture, WhitespaceString) {
-        std::string input1 = "ehvvcoSrk";
-        std::string input2 = "ehvvco Srk";
+        std::string input1 = "EHVVCOSRK";
+        std::string input2 = "EHVVCO SRK";
         CHECK_THROW(cipherInstance->decrypt(input1, input2), CipherError);
     }
     TEST_FIXTURE(CipherFixture, DigitsString) {
@@ -89,9 +89,9 @@ SUITE(DecryptTest) {
         CHECK_THROW(cipherInstance->decrypt(input1, input2), CipherError);
     }
     TEST(MaxShiftKey) {
-        Cipher cipher(9, "Sverchkov");
-        std::string input1 = "vokhcrevS";
-        std::string input2 = "Sverchkov";
+        Cipher cipher(9, "SVERCHKOV");
+        std::string input1 = "VOKHCREVS";
+        std::string input2 = "SVERCHKOV";
         CHECK_EQUAL("Sverchkov", cipher.decrypt(input1, input2));
     }
 }
