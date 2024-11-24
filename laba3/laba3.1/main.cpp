@@ -1,101 +1,93 @@
 #include <UnitTest++/UnitTest++.h>
+#include <iostream>
 #include "Cipher.h"
-#include <string>
+#include <locale>
+#include <codecvt>
 
-std::string s = "SVERCHKOV";
 
-SUITE(KeyTest) {
-    TEST(ValidKey) {
-        Cipher cipher(3, "SVERCHKOV");
-        CHECK_EQUAL("EHVVCOSRK", cipher.encrypt(s));
+using namespace std;
+string wst (int k, wstring s1)
+{
+    PerestanCipher w(k);
+    wstring s=w.CoderPerestanCipher(w, s1);
+    const string s2 (s.begin(), s.end() );
+    return s2;
+}
+string wst1 (int k, wstring s1)
+{
+    PerestanCipher w(k);
+    wstring s=w.DecoderPerestanCipher(k, s1);
+    const string s2 (s.begin(), s.end() );
+    return s2;
+}
+SUITE (KeyTest)
+{
+    wstring test = L"SVERCHKOV";
+    int k;
+    TEST (ValidKey) {
+        CHECK_EQUAL(wst(k=3,test),"EHVVCOSRK");
     }
-    TEST(LongKey) {
-        CHECK_THROW(Cipher(1, "SVERCHKOV"), CipherError);
+    TEST(EmptyKey) {
+        CHECK_THROW(wst(k=0,test), cipher_error);
+    }
+    TEST(NegativeKey) {
+        CHECK_THROW(wst(k=-3,test), cipher_error);
+    }
+    TEST(LargeKey) {
+        CHECK_THROW(wst(k=52,test), cipher_error);
+    }
+    TEST(A_characters_in_the_key_instead_of_numbers) {
+        CHECK_THROW(wst(k='$', test), cipher_error);
     }
 }
-
-struct CipherFixture {
-    Cipher* cipherInstance;
-    CipherFixture() {
-        cipherInstance = new Cipher(3, "SVERCHKOV");
+SUITE(EncryptTest)
+{
+    TEST(ValidText) {
+        CHECK_EQUAL(wst(3,L"SVERCHKOV"),"EHVVCOSRK");
     }
-    ~CipherFixture() {
-        delete cipherInstance;
+    TEST(LowText) {
+        CHECK_EQUAL(wst(3,L"sverchkov"),"ehvvcosrk");
     }
-};
-
-SUITE(EncryptTest) {
-    TEST_FIXTURE(CipherFixture, UpCaseString) {
-        std::string input = "SVERCHKOV";
-        CHECK_EQUAL("EHVVCOSRK", cipherInstance->encrypt(input));
+    TEST(SpaceText) {
+        CHECK_EQUAL(wst(3,L"SVERCH KOV"),"EHVVCO SRK");
     }
-    TEST_FIXTURE(CipherFixture, LowCaseString) {
-        std::string input = "sverchkov";
-        CHECK_EQUAL("ehvvcosrk", cipherInstance->encrypt(input));
+    TEST(EmptyText) {
+        CHECK_THROW(wst(3,L" "),cipher_error);
     }
-    TEST_FIXTURE(CipherFixture, StringWithWhitespaceAndPunct) {
-        std::string input = "SVERCH KOV";
-        CHECK_EQUAL("EHVVCOSRK", cipherInstance->encrypt(input));
+    TEST(ValiDTextWithoutletters) {
+        CHECK_THROW(wst(3,L"$"),cipher_error);
     }
-    TEST_FIXTURE(CipherFixture, StringWithNumbers) {
-        std::string input = "sver4kov";
-        CHECK_THROW(cipherInstance->encrypt(input), CipherError);
+    TEST(TextWithNumber) {
+        CHECK_EQUAL(wst(3,L"SV3RCHKOV"),"3HVVCOSRK");
     }
-    TEST_FIXTURE(CipherFixture, EmptyString) {
-        std::string input = "";
-        CHECK_THROW(cipherInstance->encrypt(input), CipherError);
-    }
-    TEST_FIXTURE(CipherFixture, NoAlphaString) {
-        std::string input = "4*4";
-        CHECK_THROW(cipherInstance->encrypt(input), CipherError);
-    }
-    TEST(MaxShiftKey) {
-        Cipher cipher(9, "SVERCHKOV");
-        std::string input1 = "VOKHCREVS";
-        std::string input2 = "SVERCHKOV";
-        CHECK_EQUAL("Sverchkov", cipher.decrypt(input1, input2));
+    TEST(TextWithSpaceAndPunct) {
+        CHECK_EQUAL(wst(9,L"$VERCH KOV"),"VOKHCR EV$");
     }
 }
+SUITE(DecryptText)
+{
+    TEST(ValidTEXT) {
+        CHECK_EQUAL(wst1(3,L"EHVVCOSRK"),"SVERCHKOV");
+    }
+    TEST(LowTEXT) {
+        CHECK_EQUAL(wst1(3,L"ehvvcosrk"),"sverchkov");
+    }
+    TEST(SpaceTEXT) {
+        CHECK_EQUAL(wst1(3,L"EHVVCO SRK"),"SVERCH KOV");
+    }
+    TEST(EmptyTEXT) {
+        CHECK_THROW(wst1(3,L" "),cipher_error);
+    }
+    TEST(TextNumberText) {
+        CHECK_EQUAL(wst1(3,L"3HVVCOSRK"),"SV3RCHKOV");
+    }
+    TEST(TextSymbolText) {
+        CHECK_EQUAL(wst1(3,L"VOKHCREV$"),"$VERCHKOV");
+    }
 
-SUITE(DecryptTest) {
-    TEST_FIXTURE(CipherFixture, UpCaseString) {
-        std::string input1 = "EHVVCOSRK";
-        std::string input2 = "SVERCHKOV";
-        CHECK_EQUAL("SVERCHKOV", cipherInstance->decrypt(input1, input2));
-    }
-    TEST_FIXTURE(CipherFixture, LowCaseString) {
-        std::string input1 = "ehvvcosrk";
-        std::string input2 = "sverchkov";
-        CHECK_EQUAL("sverchkov", cipherInstance->decrypt(input1, input2));
-    }
-    TEST_FIXTURE(CipherFixture, WhitespaceString) {
-        std::string input1 = "EHVVCOSRK";
-        std::string input2 = "EHVVCO SRK";
-        CHECK_THROW(cipherInstance->decrypt(input1, input2), CipherError);
-    }
-    TEST_FIXTURE(CipherFixture, DigitsString) {
-        std::string input1 = "ehv4cosrk";
-        std::string input2 = "ehv4cosrk";
-        CHECK_THROW(cipherInstance->decrypt(input1, input2), CipherError);
-    }
-    TEST_FIXTURE(CipherFixture, PunctString) {
-        std::string input1 = "ehv!cosrk";
-        std::string input2 = "ehv!cosrk";
-        CHECK_THROW(cipherInstance->decrypt(input1, input2), CipherError);
-    }
-    TEST_FIXTURE(CipherFixture, EmptyString) {
-        std::string input1 = "";
-        std::string input2 = "";
-        CHECK_THROW(cipherInstance->decrypt(input1, input2), CipherError);
-    }
-    TEST(MaxShiftKey) {
-        Cipher cipher(9, "SVERCHKOV");
-        std::string input1 = "VOKHCREVS";
-        std::string input2 = "SVERCHKOV";
-        CHECK_EQUAL("Sverchkov", cipher.decrypt(input1, input2));
-    }
 }
 
-int main(int argc, char **argv) {
+int main()
+{
     return UnitTest::RunAllTests();
 }
