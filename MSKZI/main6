@@ -1,0 +1,36 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    uint8_t S[16] = { 
+        0x05, 0x0D, 0x0F, 0x06,
+        0x09, 0x02, 0x0C, 0x0A,
+        0x0B, 0x07, 0x08, 0x01,
+        0x04, 0x03, 0x0E, 0x00
+    };
+
+    int p = 5;
+    
+    // Формирование таблицы S* (подстановка двух смежных 4-битных векторов)
+    uint8_t Sa[256] = {0};
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 16; j++) {
+            Sa[i * 16 + j] = (S[i] << 4) | S[j];
+        }
+    }
+    
+    // Формирование эквивалентной таблицы с циклическим сдвигом
+    uint8_t Seq[256] = {0};
+    for (int i = 0; i < 256; i++) {
+        Seq[i] = (Sa[i] >> p) | (Sa[i] << (8 - p));
+    }
+
+    cout << "Эквивалентная таблица подстановки Seq (256 байт):\n";
+    for (int i = 0; i < 256; i++) {
+        cout << hex << setw(2) << setfill('0') << (int)Seq[i] << " ";
+        if ((i + 1) % 16 == 0) cout << "\n";
+    }
+    
+    return 0;
+}
